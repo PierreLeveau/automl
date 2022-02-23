@@ -91,11 +91,6 @@ def main(api_key: str, model_framework: str, model_name: str, model_repository: 
         ml_task = job.get('mlTask')
         tools = job.get('tools')
         training_loss = None
-        print("Kili job properties")
-        print(f"input: {content_input}")
-        print(f"ml_task: {ml_task}")
-        print(f"tools: {tools}")
-
         if content_input == ContentInput.Radio \
                 and input_type == InputType.Text \
                 and ml_task == MLTask.Classification:
