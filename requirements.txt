@@ -4,7 +4,7 @@ kili
 nltk
 numpy
 requests
-sklearn
+scikit-learn
 tabulate
 tensorflow
 termcolor
