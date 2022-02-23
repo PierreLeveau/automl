@@ -52,7 +52,7 @@ def huggingface_train_ner(
                 for start_without_offset, end_without_offset in sentence_tokens:
                     start, end = start_without_offset + offset, end_without_offset + offset
                     token_annotations = [a for a in annotations \
-                        if a['beginOffset'] <= start and a['endOffset'] >= end]
+                        if a['beginOffset'] <= start and a['beginOffset'] + len(a['content']) >= end]
                     if len(token_annotations) > 0:
                         category = token_annotations[0]['categories'][0]['name']
                         label = 'B-' + category if token_annotations[0]['beginOffset'] == start \
@@ -66,14 +66,14 @@ def huggingface_train_ner(
                     'ner_tags': ner_tags,
                 }) + '\n')
                 offset = offset + sentence_tokens[-1][1] + 1
-    raw_datasets = datasets.load_dataset('json', 
-        data_files=path_dataset, 
+    raw_datasets = datasets.load_dataset('json',
+        data_files=path_dataset,
         features=datasets.features.features.Features(
             {
                 'ner_tags': datasets.Sequence(feature=datasets.ClassLabel(names=label_list)),
                 'tokens': datasets.Sequence(feature=datasets.Value(dtype='string'))
             }))
-    
+
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     label_all_tokens = True
 
@@ -101,15 +101,15 @@ def huggingface_train_ner(
             labels.append(label_ids)
         tokenized_inputs["labels"] = labels
         return tokenized_inputs
-    
+
     tokenized_datasets = raw_datasets.map(tokenize_and_align_labels, batched=True)
 
     train_dataset = tokenized_datasets['train']
-    path_model = os.path.join(path, 'model', model_framework, 
+    path_model = os.path.join(path, 'model', model_framework,
         datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     if model_framework == ModelFramework.PyTorch:
         model = AutoModelForTokenClassification.from_pretrained(
-            model_name, num_labels=len(label_list)) 
+            model_name, num_labels=len(label_list))
     if model_framework == ModelFramework.Tensorflow:
         model = TFAutoModelForTokenClassification.from_pretrained(
             model_name, num_labels=len(label_list), from_pt=True)
@@ -150,7 +150,7 @@ def huggingface_train_text_classification_single(
                 'text': response.text,
                 'label': job_categories.index(label_category),
                 }) + '\n')
-    raw_datasets = datasets.load_dataset('json', 
+    raw_datasets = datasets.load_dataset('json',
         data_files=path_dataset,
         features=datasets.features.features.Features(
             {
@@ -164,11 +164,11 @@ def huggingface_train_text_classification_single(
 
     tokenized_datasets = raw_datasets.map(tokenize_function, batched=True)
     train_dataset = tokenized_datasets['train']
-    path_model = os.path.join(path, 'model', model_framework, 
+    path_model = os.path.join(path, 'model', model_framework,
         datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     if model_framework == ModelFramework.PyTorch:
         model = AutoModelForSequenceClassification.from_pretrained(
-            model_name, num_labels=len(job_categories)) 
+            model_name, num_labels=len(job_categories))
     if model_framework == ModelFramework.Tensorflow:
         model = TFAutoModelForSequenceClassification.from_pretrained(
             model_name, num_labels=len(job_categories), from_pt=True)
