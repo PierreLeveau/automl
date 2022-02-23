@@ -36,6 +36,8 @@ def train_ner(
     '''
     '''
     from utils.huggingface.train import huggingface_train_ner
+    import nltk
+    nltk.download('punkt')
     model_repository = set_default(model_repository, ModelRepository.HuggingFace,
         'model_repository', [ModelRepository.HuggingFace])
     path = os.path.join(HOME, project_id, job_name, model_repository)
@@ -53,6 +55,8 @@ def train_text_classification_single(
         model_framework, model_name, model_repository, project_id) -> float:
     '''
     '''
+    import nltk
+    nltk.download('punkt')
     from utils.huggingface.train import huggingface_train_text_classification_single
     model_repository = set_default(model_repository, ModelRepository.HuggingFace,
         'model_repository', [ModelRepository.HuggingFace])
@@ -115,10 +119,6 @@ def main(api_key: str, model_framework: str, model_name: str, model_repository: 
         training_losses.append([job_name, training_loss])
     kili_print()
     print(tabulate(training_losses, headers=['job_name', 'training_loss']))
-
-
-
-
 
 
 if __name__ == '__main__':
