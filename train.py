@@ -78,12 +78,13 @@ def train_text_classification_single(
 @click.option('--model-name', default=None, help='Model name (eg. bert-base-cased)')
 @click.option('--model-repository', default=None, help='Model repository (eg. huggingface)')
 @click.option('--project-id', default=None, help='Kili project ID')
-def main(api_key: str, model_framework: str, model_name: str, model_repository: str, project_id: str):
+@click.option('--label-types', default=None, help='Comma separated list Kili specific label types to select (among DEFAULT, REVIEW, PREDICTION)')
+def main(api_key: str, model_framework: str, model_name: str, model_repository: str, project_id: str, label_types: str):
     '''
     '''
     kili = Kili(api_key=api_key)
     input_type, jobs = get_project(kili, project_id)
-    assets = get_assets(kili, project_id)
+    assets = get_assets(kili, project_id, label_types.split(",") if label_types else None)
     training_losses = []
     for job_name, job in jobs.items():
         content_input = job.get('content', {}).get('input')
