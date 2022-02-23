@@ -1,5 +1,4 @@
 import os
-from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Type, Union
 
 import click
 from kili.client import Kili
