@@ -8,7 +8,7 @@ import datasets
 from nltk import sent_tokenize
 from nltk.tokenize import TreebankWordTokenizer
 import requests
-from transformers import AutoConfig, AutoModelForSequenceClassification, AutoModelForTokenClassification, \
+from transformers import AutoModelForSequenceClassification, AutoModelForTokenClassification, \
     AutoTokenizer, DataCollatorForTokenClassification, \
     TFAutoModelForSequenceClassification, TFAutoModelForTokenClassification, \
     Trainer, TrainingArguments
@@ -26,7 +26,8 @@ def huggingface_train_ner(
      - https://github.com/huggingface/transformers/blob/master/examples/pytorch/token-classification/run_ner.py
      - https://colab.research.google.com/github/huggingface/notebooks/blob/master/examples/token_classification.ipynb#scrollTo=okwWVFwfYKy1
     '''
-    kili_print(job_name)
+    kili_print(f"Job Name: {job_name}")
+    kili_print(f"Base model: {model_name}")
     path_dataset = os.path.join(path, 'dataset', 'data.json')
     kili_print(f'Downloading data to {path_dataset}')
     if os.path.exists(path_dataset):
@@ -109,10 +110,10 @@ def huggingface_train_ner(
         datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     if model_framework == ModelFramework.PyTorch:
         model = AutoModelForTokenClassification.from_pretrained(
-            model_name, num_labels=len(label_list))
+            model_name, num_labels=len(label_list), id2label=dict(enumerate(label_list)))
     if model_framework == ModelFramework.Tensorflow:
         model = TFAutoModelForTokenClassification.from_pretrained(
-            model_name, num_labels=len(label_list), from_pt=True)
+            model_name, num_labels=len(label_list), from_pt=True, id2label=dict(enumerate(label_list)))
     training_args = TrainingArguments(os.path.join(path_model, 'training_args'))
     data_collator = DataCollatorForTokenClassification(tokenizer)
     trainer = Trainer(
