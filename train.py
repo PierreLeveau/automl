@@ -45,7 +45,7 @@ def train_ner(
         model_framework = set_default(model_framework, ModelFramework.PyTorch,
             'model_framework', [ModelFramework.PyTorch, ModelFramework.Tensorflow])
         model_name = set_default(model_name, ModelName.BertBaseMultilingualCased,
-            'model_name', [ModelName.BertBaseMultilingualCased])
+            'model_name', [ModelName.BertBaseMultilingualCased, ModelName.DistilbertBaseCased, ModelName.BertBaseCased])
         return huggingface_train_ner(
             api_key, assets, job, job_name, model_framework, model_name, path)
 
